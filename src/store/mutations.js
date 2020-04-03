@@ -13,5 +13,14 @@ export default {
   updateScore: (state, payload) => {
     console.log(payload);
     state.score += payload;
+  },
+  setCategories: (state, payload) => {
+    state.categories = payload;
+  },
+  setQuestions: (state, payload) => {
+    state.questions = payload;
+  },
+  setScore: (state, payload) => {
+    state.score = payload;
   }
 };

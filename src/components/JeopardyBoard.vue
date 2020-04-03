@@ -4,9 +4,9 @@
       <b-col
         class="category-box box"
         v-for="category in categories"
-        :key="category"
+        :key="category.id"
       >
-        {{ category }}
+        {{ category.name }}
       </b-col>
     </b-row>
     <b-row

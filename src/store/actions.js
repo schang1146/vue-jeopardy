@@ -14,49 +14,52 @@ export default {
       value: question.value
     });
   },
-  getCategoryQuestion: (_, { id }) => {
-    return axios
-      .get(`http://jservice.io/api/category/`, {
-        params: {
-          id
-        }
-      })
+  getCategories: async ({ commit }) => {
+    // initialize categories
+    const categories = [];
+
+    // GET all trivia categories
+    const all_categories = await axios
+      .get("https://opentdb.com/api_category.php")
       .then(res => {
-        return res.data;
+        return res.data.trivia_categories;
       })
       .catch(err => {
         return err.message;
       });
-  },
-  getRandomQuestion: () => {
-    return axios
-      .get("http://jservice.io/api/random")
-      .then(res => {
-        return res.data;
-      })
-      .catch(err => {
-        return err.message;
-      });
-  },
-  getQuestionSet: async ({ commit, dispatch }) => {
-    let categoryId = [];
-    let categorySet = [];
-    let questionSet = [[], [], [], [], []];
-    for (let i = 0; i < 6; i++) {
-      let res = await dispatch("getRandomQuestion");
-      categoryId.push(res[0].category_id);
+
+    // pick 6 random categories
+    while (categories.length < 6) {
+      categories.push(all_categories[Math.floor(Math.random() * Math.floor(all_categories.length))])
     }
-    for (let i = 0; i < 6; i++) {
-      let res = await dispatch("getCategoryQuestion", {
-        id: categoryId[i]
-      });
-      categorySet.push(res.title);
-      for (let j = 0; j < 5; j++) {
-        res.clues[j].value = 200 + 200 * j;
-        res.clues[j].isAnswered = false;
-        questionSet[j].push(res.clues[j]);
+
+    commit("setCategories", categories);
+  },
+  getQuestions: async ({ commit, state }) => {
+    // initialize questions
+    const questions = [[], [], [], [], [], []]
+
+    // loop through categories
+    state.categories.forEach(async ({ id }) => {
+      // GET 5 questions for category id
+      const category_questions = await axios
+        .get(`https://opentdb.com/api.php?amount=5&category=${id}&type=multiple`)
+        .then(res => {
+          return res.data.results
+        })
+        .catch( err => {
+          return err.message;
+        });
+
+      // put category_questions into questions array with a value
+      for (let n = 0; n < 5; n++) {
+        const question_object = category_questions[n]
+        question_object.value = (n + 1) * 200;
+        questions[n].push(question_object);
       }
-    }
-    commit("updateQuestions", { categorySet, questionSet });
-  }
+    })
+    
+    commit("setQuestions", questions)
+  },
+  postAnswer: () => {}
 };

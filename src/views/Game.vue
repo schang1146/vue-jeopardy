@@ -8,9 +8,7 @@
     />
     <ScoreBoard />
     <div>
-      <b-button @click="backToHome" variant="outline-danger">
-        Back To HomePage
-      </b-button>
+      <b-button @click="backToHome" variant="outline-danger">Back To HomePage</b-button>
       <b-button @click="reloadPage" variant="danger">Reset</b-button>
     </div>
   </div>
@@ -31,7 +29,7 @@ export default {
     ...mapState(["categories", "questions"])
   },
   methods: {
-    ...mapActions(["getQuestionSet"]),
+    ...mapActions(["getCategories", "getQuestions"]),
     backToHome() {
       this.$router.push("/");
       window.location.reload();
@@ -40,8 +38,9 @@ export default {
       window.location.reload();
     }
   },
-  mounted() {
-    this.getQuestionSet();
+  async mounted() {
+    await this.getCategories();
+    await this.getQuestions();
   }
 };
 </script>
