@@ -8,7 +8,9 @@
     />
     <ScoreBoard />
     <div>
-      <b-button @click="backToHome" variant="outline-danger">Back To HomePage</b-button>
+      <b-button @click="backToHome" variant="outline-danger">
+        Back To HomePage
+      </b-button>
       <b-button @click="reloadPage" variant="danger">Reset</b-button>
     </div>
   </div>
@@ -46,6 +48,18 @@ export default {
 </script>
 
 <style lang="scss">
+@font-face {
+  font-family: "gyparody";
+  src: url(../assets/fonts/gyparody/gyparody_rg-webfont.woff);
+}
+
+h2 {
+  font-size: 75px;
+  font-family: "gyparody";
+  font-weight: normal;
+  font-style: normal;
+}
+
 .game-view-container {
   height: 100%;
   background-color: #272643;

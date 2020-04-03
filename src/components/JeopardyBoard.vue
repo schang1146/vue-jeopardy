@@ -22,7 +22,7 @@
         :key="question.id"
         @click="toggleQuestionModal(question)"
       >
-        <span class="box-text">{{ question.value }}</span>
+        <span class="box-text">${{ question.value }}</span>
       </b-col>
     </b-row>
 
@@ -30,15 +30,23 @@
       class="question-modal-container"
       v-model="showQuestionModal"
       centered
+      hide-footer
+      hide-header
     >
-      <b-form @submit.prevent="submitAnswer">
-        <p>{{ questionModalData.question }}</p>
+      <b-form
+        @submit.prevent="submitAnswer"
+        v-if="!questionModalData.isAnswered"
+      >
+        <!-- Use v-html because API returns questions written with special html characters -->
+        <p><span v-html="questionModalData.question" /></p>
         <p>
           <input placeholder="Answer:" v-model="answer" />
-          <b-button @click="submitAnswer" variant="primary">Submit</b-button>
+          <!-- <b-button @click="submitAnswer" variant="primary">Submit</b-button> -->
         </p>
-        Debug Answer: <span class="question-answer">{{ questionModalData.answer }}</span>
       </b-form>
+      <div v-else>
+        <span v-html="result" />
+      </div>
     </b-modal>
   </b-container>
 </template>
@@ -48,31 +56,34 @@
 import { mapActions } from "vuex";
 
 export default {
-  // components: { QuestionCard },
   data() {
     return {
       showQuestionModal: false,
       questionModalData: {},
-      answer: ""
+      answer: "",
+      result: ""
     };
   },
   methods: {
-    ...mapActions(["correctAnswer", "wrongAnswer"]),
+    ...mapActions(["postAnswer"]),
     submitAnswer() {
-      if (this.answer == this.questionModalData.answer) {
-        this.correctAnswer(this.questionModalData);
-        this.answer = "";
-        this.showQuestionModal = false;
+      this.postAnswer({
+        question: this.questionModalData.question,
+        guess: this.answer,
+        answer: this.questionModalData.correct_answer,
+        value: this.questionModalData.value
+      });
+      if (this.answer === this.questionModalData.correct_answer) {
+        this.result = "Correct!";
       } else {
-        this.wrongAnswer(this.questionModalData);
-        this.answer = "";
-        this.showQuestionModal = false;
+        this.result = `Wrong!<br /><br />Correct Answer: ${this.questionModalData.correct_answer}`;
       }
+      this.answer = "";
     },
     toggleQuestionModal(question) {
-      if (question.isAnswered == false) {
+      if (question.isAnswered === false) {
         this.showQuestionModal = !this.showQuestionModal;
-        if (this.showQuestionModal == true) {
+        if (this.showQuestionModal === true) {
           this.questionModalData = question;
         } else {
           this.questionModelData = {};
@@ -88,9 +99,18 @@ export default {
 </script>
 
 <style lang="scss">
+@font-face {
+  font-family: "itc_korinnaregular";
+  src: url(../assets/fonts/korinna-regular/korinna-regular-webfont.woff);
+}
+
 .jeopardy-board-container {
-  width: 60%;
-  height: 60%;
+  width: 70%;
+  height: 70%;
+
+  font-family: "itc_korinnaregular";
+  font-weight: normal;
+  font-style: normal;
 
   .box-container {
     margin: 25px;
@@ -99,8 +119,8 @@ export default {
   .box {
     border: 1px white solid;
     margin: 2px;
-    background-color: blue;
-    color: orange;
+    background-color: #3f48cc;
+    color: #ffc90e;
 
     display: flex;
     justify-content: center;
@@ -117,11 +137,11 @@ export default {
   }
 
   .answered {
-    background-color: gray;
+    color: #3f48cc;
 
     &:hover {
       cursor: default;
-      background-color: gray;
+      background-color: #3f48cc;
     }
   }
 
@@ -133,6 +153,23 @@ export default {
     margin-bottom: 25px;
   }
 }
+
+.modal-content {
+  border-radius: 0px;
+  border: 1px white solid;
+  background-color: #3f48cc;
+  color: #ffc90e;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  font-family: "itc_korinnaregular";
+  font-weight: normal;
+  font-style: normal;
+}
+
 .question-answer {
   background-color: #212529;
 
