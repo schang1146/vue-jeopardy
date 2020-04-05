@@ -1,17 +1,14 @@
 export default {
-  updateAnsweredQuestion: (state, payload) => {
-    for (let i = 0; i < 6; i++) {
-      if (state.questions[payload.value / 200 - 1][i].id == payload.id) {
-        state.questions[payload.value / 200 - 1][i].isAnswered = true;
-      }
-    }
+  setCategories: (state, payload) => {
+    state.categories = payload;
   },
-  updateQuestions: (state, payload) => {
-    state.categories = payload.categorySet;
-    state.questions = payload.questionSet;
+  setQuestions: (state, payload) => {
+    state.questions = payload;
   },
-  updateScore: (state, payload) => {
-    console.log(payload);
-    state.score += payload;
+  setQuestionAnswered: (state, payload) => {
+    state.questions[payload[0]][payload[1]].isAnswered = true;
+  },
+  setScore: (state, payload) => {
+    state.score = payload;
   }
 };

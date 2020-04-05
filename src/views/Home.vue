@@ -4,17 +4,17 @@
       <b-col>
         <img alt="Vue logo" src="../assets/logo.png" />
         <h1><b>Jeopardy</b></h1>
-        <h3>Built with Vue</h3>
         <div>
-          <router-link to="/game">
-            <b-button variant="primary">
-              Start Game
+          <router-link to="/settings">
+            <b-button squared variant="primary">
+              Play!
             </b-button>
           </router-link>
-          <!-- TODO: Make a `Rules` view
-          <b-button variant="outline-success">
-            Rules
-          </b-button> -->
+          <router-link to="/rules">
+            <b-button squared variant="success">
+              Rules
+            </b-button>
+          </router-link>
         </div>
       </b-col>
     </b-row>

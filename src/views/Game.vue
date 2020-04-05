@@ -7,12 +7,6 @@
       :questions="questions"
     />
     <ScoreBoard />
-    <div>
-      <b-button @click="backToHome" variant="outline-danger">
-        Back To HomePage
-      </b-button>
-      <b-button @click="reloadPage" variant="danger">Reset</b-button>
-    </div>
   </div>
 </template>
 
@@ -31,7 +25,7 @@ export default {
     ...mapState(["categories", "questions"])
   },
   methods: {
-    ...mapActions(["getQuestionSet"]),
+    ...mapActions(["getCategories", "getQuestions"]),
     backToHome() {
       this.$router.push("/");
       window.location.reload();
@@ -40,13 +34,26 @@ export default {
       window.location.reload();
     }
   },
-  mounted() {
-    this.getQuestionSet();
+  async mounted() {
+    await this.getCategories();
+    await this.getQuestions();
   }
 };
 </script>
 
 <style lang="scss">
+@font-face {
+  font-family: "gyparody";
+  src: url(../assets/fonts/gyparody/gyparody_rg-webfont.woff);
+}
+
+h2 {
+  font-size: 75px;
+  font-family: "gyparody";
+  font-weight: normal;
+  font-style: normal;
+}
+
 .game-view-container {
   height: 100%;
   background-color: #272643;

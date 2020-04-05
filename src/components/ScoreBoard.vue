@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h4>Scoreboard</h4>
-    <p>Your Score: {{ score }}</p>
+  <div class="scoreboard-container">
+    <h4>Scoreboard:</h4>
+    <p>${{ score }}</p>
   </div>
 </template>
 
@@ -10,7 +10,20 @@ import { mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState(["score"])
+    ...mapState(["players"])
   }
 };
 </script>
+
+<style scoped>
+@font-face {
+  font-family: "gyparody";
+  src: url(../assets/fonts/gyparody/gyparody_rg-webfont.woff);
+}
+
+.scoreboard-container {
+  font-family: "gyparody";
+  font-weight: normal;
+  font-style: normal;
+}
+</style>

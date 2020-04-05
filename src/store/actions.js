@@ -1,62 +1,72 @@
 import axios from "axios";
 
 export default {
-  correctAnswer: ({ commit }, question) => {
-    commit("updateScore", question.value);
-    commit("updateAnsweredQuestion", {
-      id: question.id,
-      value: question.value
-    });
-  },
-  wrongAnswer: ({ commit }, question) => {
-    commit("updateAnsweredQuestion", {
-      id: question.id,
-      value: question.value
-    });
-  },
-  getCategoryQuestion: (_, { id }) => {
-    return axios
-      .get(`http://jservice.io/api/category/`, {
-        params: {
-          id
-        }
-      })
+  getCategories: async ({ commit }) => {
+    // initialize categories
+    const categories = [];
+
+    // keep track of id's to ensure no duplicates
+    const id = [];
+
+    // GET all trivia categories
+    const all_categories = await axios
+      .get("https://opentdb.com/api_category.php")
       .then(res => {
-        return res.data;
+        return res.data.trivia_categories;
       })
       .catch(err => {
         return err.message;
       });
-  },
-  getRandomQuestion: () => {
-    return axios
-      .get("http://jservice.io/api/random")
-      .then(res => {
-        return res.data;
-      })
-      .catch(err => {
-        return err.message;
-      });
-  },
-  getQuestionSet: async ({ commit, dispatch }) => {
-    let categoryId = [];
-    let categorySet = [];
-    let questionSet = [[], [], [], [], []];
-    for (let i = 0; i < 6; i++) {
-      let res = await dispatch("getRandomQuestion");
-      categoryId.push(res[0].category_id);
-    }
-    for (let i = 0; i < 6; i++) {
-      let res = await dispatch("getCategoryQuestion", {
-        id: categoryId[i]
-      });
-      categorySet.push(res.title);
-      for (let j = 0; j < 5; j++) {
-        res.clues[j].value = 200 + 200 * j;
-        res.clues[j].isAnswered = false;
-        questionSet[j].push(res.clues[j]);
+
+    // pick 6 random categories
+    while (categories.length < 6) {
+      let random_idx = Math.floor(
+        Math.random() * Math.floor(all_categories.length)
+      );
+      if (!(random_idx in id)) {
+        categories.push(all_categories[random_idx]);
       }
     }
-    commit("updateQuestions", { categorySet, questionSet });
+
+    commit("setCategories", categories);
+  },
+  getQuestions: async ({ commit, state }) => {
+    // initialize questions
+    const questions = [[], [], [], [], [], []];
+
+    // loop through categories
+    state.categories.forEach(async ({ id }) => {
+      // GET 5 questions for category id
+      const category_questions = await axios
+        .get(
+          `https://opentdb.com/api.php?amount=5&category=${id}&type=multiple`
+        )
+        .then(res => {
+          return res.data.results;
+        })
+        .catch(err => {
+          return err.message;
+        });
+
+      // put category_questions into questions array with a value
+      for (let n = 0; n < 5; n++) {
+        const question_object = category_questions[n];
+        question_object.value = (n + 1) * 200;
+        question_object.isAnswered = false;
+        questions[n].push(question_object);
+      }
+    });
+
+    commit("setQuestions", questions);
+  },
+  postAnswer: ({ commit, state }, { question, guess, answer, value }) => {
+    if (guess === answer) {
+      commit("setScore", state.score + value);
+    }
+    for (let i = 0; i < 6; i++) {
+      if (state.questions[value / 200 - 1][i].question === question) {
+        commit("setQuestionAnswered", [value / 200 - 1, i]);
+      }
+    }
   }
 };
