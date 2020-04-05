@@ -7,12 +7,6 @@
       :questions="questions"
     />
     <ScoreBoard />
-    <div>
-      <b-button @click="backToHome" variant="outline-danger">
-        Back To HomePage
-      </b-button>
-      <b-button @click="reloadPage" variant="danger">Reset</b-button>
-    </div>
   </div>
 </template>
 
