@@ -3,10 +3,7 @@
     <h2>Settings</h2>
     <div>
       <h3>Players</h3>
-      <input
-        type="text"
-        placeholder="Enter your name:"
-      />
+      <input type="text" placeholder="Enter your name:" />
       <input
         type="text"
         @click="copyLink"

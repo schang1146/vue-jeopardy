@@ -11,6 +11,7 @@
 </template>
 
 <script>
+// import ChannelDetails from "@/components/ChannelDetails";
 import JeopardyBoard from "@/components/JeopardyBoard";
 import ScoreBoard from "@/components/ScoreBoard";
 
@@ -18,11 +19,20 @@ import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
+    // ChannelDetails,
     JeopardyBoard,
     ScoreBoard
   },
   computed: {
     ...mapState(["categories", "questions"])
+  },
+  data() {
+    return {
+      // holds current presence-id
+      presenceid: null,
+      // holds url of game
+      url: null
+    };
   },
   methods: {
     ...mapActions(["getCategories", "getQuestions"]),
