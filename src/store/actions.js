@@ -1,6 +1,10 @@
 import axios from "axios";
 
 export default {
+  deletePlayer: ({ state, commit }, payload) => {
+    const players = state.players.filter(player => player.id != payload)
+    commit("setPlayers", players);
+  },
   getCategories: async ({ commit }) => {
     // initialize categories
     const categories = [];
@@ -23,7 +27,8 @@ export default {
       let random_idx = Math.floor(
         Math.random() * Math.floor(all_categories.length)
       );
-      if (!(random_idx in id)) {
+      if (!(id.includes(random_idx))) {
+        id.push(random_idx)
         categories.push(all_categories[random_idx]);
       }
     }
@@ -35,11 +40,11 @@ export default {
     const questions = [[], [], [], [], [], []];
 
     // loop through categories
-    state.categories.forEach(async ({ id }) => {
+    for (let i = 0; i < state.categories.length; i++) {
       // GET 5 questions for category id
       const category_questions = await axios
         .get(
-          `https://opentdb.com/api.php?amount=5&category=${id}&type=multiple`
+          `https://opentdb.com/api.php?amount=5&category=${state.categories[i].id}&type=multiple`
         )
         .then(res => {
           return res.data.results;
@@ -55,7 +60,7 @@ export default {
         question_object.isAnswered = false;
         questions[n].push(question_object);
       }
-    });
+    };
 
     commit("setQuestions", questions);
   },
@@ -68,5 +73,16 @@ export default {
         commit("setQuestionAnswered", [value / 200 - 1, i]);
       }
     }
+  },
+  postPlayer: ({ commit, state }, payload) => {
+    const lastId = Number(state.players[state.players.length - 1].name[state.players[state.players.length - 1].name.length - 1]);
+    const newPlayer = {
+      id: payload,
+      name: `Player ${lastId + 1}`,
+      score: 0
+    };
+    const players = state.players;
+    players.push(newPlayer);
+    commit("setPlayers", players);
   }
 };

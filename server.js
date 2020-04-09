@@ -10,11 +10,19 @@ const Pusher = require("pusher")
 const app = express()
 
 // initialize Pusher with appId, key, and secret
+// const pusher = new Pusher({
+//     appId: process.env.VUE_APP_ID,
+//     key: process.env.VUE_APP_KEY,
+//     secret: process.env.VUE_APP_SECRET,
+//     cluster: process.env.VUE_APP_CLUSTER,
+//     useTLS: true
+// })
+
 const pusher = new Pusher({
-    appId: process.env.APP_ID,
-    key: process.env.APP_KEY,
-    secret: process.env.APP_SECRET,
-    cluster: process.env.YOUR_CLUSTER,
+    appId: "976766",
+    key: "04d1b15146121c04bc9d",
+    secret: "a8fc8c25320ec7b126a2",
+    cluster: "us3",
     useTLS: true
 })
 
@@ -50,7 +58,10 @@ app.post("/pusher/auth", (req, res) => {
     let presenceData = {
         user_id: crypto.randomBytes(16).toString("hex")
     }
+    console.log(socketId, channel, presenceData)
+    console.log(typeof(socketId), typeof(channel), typeof(presenceData))
     let auth = pusher.authenticate(socketId, channel, presenceData)
+    console.log(auth)
     res.send(auth)
 })
 

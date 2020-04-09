@@ -2,6 +2,9 @@ export default {
   setCategories: (state, payload) => {
     state.categories = payload;
   },
+  setPlayers: (state, payload) => {
+    state.players = payload;
+  },
   setQuestions: (state, payload) => {
     state.questions = payload;
   },

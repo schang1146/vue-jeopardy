@@ -1,5 +1,9 @@
 export default {
   categories: [],
   questions: [],
-  players: []
+  players: [{
+    id: "root-user",
+    name: "Player 1",
+    score: 0
+  }]
 };

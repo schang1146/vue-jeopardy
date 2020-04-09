@@ -1,7 +1,10 @@
 <template>
   <div class="scoreboard-container">
-    <h4>Scoreboard:</h4>
-    <p>${{ score }}</p>
+    <div class="player-score" v-for="player in players" :key="player.name">
+      <h4>Scoreboard:</h4>
+      <p>{{ player.name }}
+      <p>${{ player.score }}</p>
+    </div>
   </div>
 </template>
 
