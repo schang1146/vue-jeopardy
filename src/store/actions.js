@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import ChannelDetails from "@/components/ChannelDetails";
+
 export default {
   deletePlayer: ({ state, commit }, payload) => {
     const players = state.players.filter(player => player.id != payload)
@@ -64,9 +66,22 @@ export default {
 
     commit("setQuestions", questions);
   },
-  postAnswer: ({ commit, state }, { question, guess, answer, value }) => {
+  postAnswer: ({ commit, state }, { playerid, answer, guess, question, value }) => {
+    console.log("postAnswer")
+    let channel = ChannelDetails.subscribeToPusher();
+    channel.trigger("client-log-test");
+    channel.bind("client-send-score", data => {
+      console.log("client-send-score; receiving data", data)
+      commit("setScore", { playerid: data.playerid, score: data.score });
+    });
+
     if (guess === answer) {
-      commit("setScore", state.score + value);
+      for (let id = 0; id < state.players.length; id++) {
+        if (state.players[id].id === playerid) {
+          commit("setScore", { playerid, score: state.players[id].score + value});
+          channel.trigger("client-send-score", { playerid, score: state.score + value })
+        }
+      }
     }
     for (let i = 0; i < 6; i++) {
       if (state.questions[value / 200 - 1][i].question === question) {
@@ -74,15 +89,30 @@ export default {
       }
     }
   },
+  postCategories: ({ commit }, categories) => {
+    commit("setCategories", categories);
+  },
+  postId: ({ commit }, id) => {
+    commit("setId", id)
+  },
   postPlayer: ({ commit, state }, payload) => {
-    const lastId = Number(state.players[state.players.length - 1].name[state.players[state.players.length - 1].name.length - 1]);
-    const newPlayer = {
-      id: payload,
-      name: `Player ${lastId + 1}`,
-      score: 0
-    };
     const players = state.players;
-    players.push(newPlayer);
+    players.push(payload);
     commit("setPlayers", players);
+  },
+  postQuestions: ({ commit }, questions) => {
+    commit("setQuestions", questions);
+  },
+  putPlayer: ({ commit }, payload) => {
+    commit("setPlayers", payload);
+  },
+  putQuestions: ({ commit, state }, questionId) => {
+    let questions = state.questions;
+    for (let id = 0; id < questions.length; id++) {
+      if (questions[id] === questionId) {
+        questions[id].isAnswered = true;
+      }
+    }
+    commit("setQuestions", questions);
   }
 };

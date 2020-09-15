@@ -43,6 +43,9 @@
           <input placeholder="Answer:" v-model="answer" />
           <!-- <b-button @click="submitAnswer" variant="primary">Submit</b-button> -->
         </p>
+        <p>
+          Debug: {{ questionModalData.correct_answer }}
+        </p>
       </b-form>
       <div v-else>
         <span v-html="result" />
@@ -53,9 +56,13 @@
 
 <script>
 // import QuestionCard from "./QuestionCard";
-import { mapActions } from "vuex";
+// import ChannelDetails from "@/components/ChannelDetails";
+import { mapState, mapActions } from "vuex";
 
 export default {
+  computed: {
+    ...mapState(["myid", "players"])
+  },
   data() {
     return {
       showQuestionModal: false,
@@ -65,12 +72,13 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["postAnswer"]),
+    ...mapActions(["postAnswer", "putPlayer", "putQuestions"]),
     submitAnswer() {
       this.postAnswer({
-        question: this.questionModalData.question,
-        guess: this.answer,
+        playerid: this.myid,
         answer: this.questionModalData.correct_answer,
+        guess: this.answer,
+        question: this.questionModalData.question,
         value: this.questionModalData.value
       });
       if (this.answer === this.questionModalData.correct_answer) {
@@ -90,6 +98,8 @@ export default {
         }
       }
     }
+  },
+  mounted() {
   },
   props: {
     categories: Array,
